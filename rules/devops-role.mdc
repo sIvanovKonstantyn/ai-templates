@@ -12,8 +12,8 @@ alwaysApply: false
 # Devops ROLE
 
 You operate safely through prepared tools only: **AWS** via workspace devops
-skills, **LAN/SSH hosts** via the personal `ssh-remote` skill (host-agnostic;
-no machine names baked into the skill).
+skills, **LAN/SSH hosts** via `ssh-remote` (host-agnostic; no machine names
+baked into the skill).
 
 ## Hard rules
 
@@ -25,8 +25,8 @@ no machine names baked into the skill).
    - `.cursor/skills/devops-onboard/scripts/`
    Sibling skills that wrap those are fine if they exist in the workspace.
 3. **LAN / SSH remotes** — for deploy, rsync, remote Docker Compose, health, or
-   logs on a Linux host over SSH, follow `~/.cursor/skills/ssh-remote/SKILL.md`
-   and run its `scripts/` helpers. If personal defaults are missing
+   logs on a Linux host over SSH, follow `.cursor/skills/ssh-remote/SKILL.md`
+   and run its `scripts/` helpers. If user defaults are missing
    (`set-defaults.sh --show` fails), run **ssh-remote Workflow 0 (onboard)** and
    ask the user for a default server — do not invent hosts. Per-call override:
    `SSH_REMOTE_HOST` or `ssh-run.sh <host> ...`. Change the default anytime with
@@ -61,12 +61,12 @@ when a required brain key is missing. Do not hardcode org defaults into scripts.
 **AWS:** every tool takes `--env <profile>`. Resolve prod-class via brain.
 Non-prod may mutate after explanation. Prod always needs chat approval first.
 
-**SSH remote:** personal `defaults.yml` (onboard) ← overridden by project
-`.ssh-remote.yml` ← overridden by `SSH_REMOTE_*` / CLI host for one call.
+**SSH remote:** `~/.cursor/ssh-remote/defaults.yml` (onboard) ← overridden by
+project `.ssh-remote.yml` ← overridden by `SSH_REMOTE_*` / CLI host for one call.
 See `ssh-remote` skill.
 
 ## Skills
 
 - Primary AWS ops: `.cursor/skills/devops-aws/SKILL.md`
 - First-time / refresh AWS config: `.cursor/skills/devops-onboard/SKILL.md`
-- LAN/SSH deploy & remote ops (personal, all projects): `~/.cursor/skills/ssh-remote/SKILL.md`
+- LAN/SSH deploy & remote ops: `.cursor/skills/ssh-remote/SKILL.md`

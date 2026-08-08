@@ -3,14 +3,12 @@
 Company-agnostic Cursor **roles**, **skills**, and **prepared tools** for:
 
 - **Devops** — safe AWS ops via scripts (after onboard), plus LAN/SSH remote
-  Linux hosts via the personal `ssh-remote` skill (rsync, Docker Compose,
-  health/logs)
+  Linux hosts via `ssh-remote` (rsync, Docker Compose, health/logs)
 - **Analyst** — documentation inventory and analysis notes (after onboard)
 
-No credentials, hostnames, bucket names, or SSM paths are hard-coded in kit
-skills. AWS/org specifics live in **brain files** from onboard. SSH defaults
-live in a personal `defaults.yml` (asked during onboard) — never baked into
-skill markdown.
+No credentials, hostnames, bucket names, or SSM paths are hard-coded in skills.
+AWS/org specifics live in **brain files** from onboard. SSH host defaults live
+in `~/.cursor/ssh-remote/defaults.yml` (asked during onboard) — outside git.
 
 ## Install into a workspace
 
@@ -30,22 +28,11 @@ cp "$KIT/schemas/analyst-brain.example.json" "$WS/.cursor/analyst/brain.example.
 
 Symlinks work too if you prefer a single source of truth.
 
-### Personal skill: `ssh-remote`
-
-LAN/SSH helpers are **not** copied from this kit. Install once under your user:
-
-```text
-~/.cursor/skills/ssh-remote/
-```
-
-(Created separately as a personal Cursor skill.) The devops role references that
-path. Devops onboard asks for a default SSH host when defaults are missing.
-
 ## First-time onboard
 
 | Role | Skill | Writes |
 |------|--------|--------|
-| Devops | `devops-onboard` | `.cursor/devops/brain.json`, `ONBOARD_REPORT.md`; may also set personal `ssh-remote` defaults |
+| Devops | `devops-onboard` | `.cursor/devops/brain.json`, `ONBOARD_REPORT.md`; may also set `~/.cursor/ssh-remote/defaults.yml` |
 | Analyst | `analyst-onboard` | `.cursor/analyst/brain.json`, `CONTEXT.md` |
 
 1. Enable the role rule in Cursor (or `@`-mention the `.mdc`).
@@ -56,7 +43,7 @@ path. Devops onboard asks for a default SSH host when defaults are missing.
 
 1. This call — `SSH_REMOTE_*` or `ssh-run.sh <host> ...`
 2. Project — `.ssh-remote.yml` (no secrets)
-3. Personal — `~/.cursor/skills/ssh-remote/defaults.yml` (from onboard / `set-defaults.sh`)
+3. User defaults — `~/.cursor/ssh-remote/defaults.yml` (from onboard / `set-defaults.sh`)
 
 ## Auth (Devops)
 
@@ -78,11 +65,9 @@ schemas/         example brains
 skills/
   devops-onboard/
   devops-aws/
+  ssh-remote/          # LAN/SSH + Docker Compose helpers
   analyst-onboard/
   analyst-docs/
-
-# personal (not in this repo):
-# ~/.cursor/skills/ssh-remote/
 ```
 
 ## Optional: Cursor Auto-review

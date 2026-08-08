@@ -1,0 +1,4 @@
+# User defaults written by set-defaults.sh live outside the skill tree:
+# ~/.cursor/ssh-remote/defaults.yml
+# Keep this ignore in case a local defaults.yml is created by mistake.
+defaults.yml
