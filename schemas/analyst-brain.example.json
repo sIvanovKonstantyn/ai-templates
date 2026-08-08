@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "product_name": "Acme",
+  "org_label": "Acme Engineering",
+  "docs_roots": ["docs"],
+  "source_roots": [],
+  "naming": {
+    "analysis": "{topic}-analysis.md",
+    "review": "{topic}-review-YYYY-MM-DD.md",
+    "postmortem": "{topic}-YYYY-MM-DD-postmortem.md",
+    "service": "{service}-service.md",
+    "guide": "{topic}-guide.md"
+  },
+  "glossary": [],
+  "context_notes": [],
+  "indexed_at": null,
+  "last_inventory_path": null,
+  "notes": "Written by analyst-onboard."
+}

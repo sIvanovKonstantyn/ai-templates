@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "auth_mode": "aws-vault",
+  "vault_command": "aws-vault",
+  "region_default": "us-east-1",
+  "profiles": ["dev", "staging", "prod"],
+  "prod_profiles": ["prod"],
+  "ecs": {
+    "cluster_name_template": "{stack}-cluster",
+    "critical_env_keys": []
+  },
+  "cdn": {
+    "bucket_name": null,
+    "bucket_tag": { "key": "Name", "value": "WebOriginBucket" }
+  },
+  "opensearch": {
+    "domain": null
+  },
+  "datadog": {
+    "api_key_param": null,
+    "app_key_param": null,
+    "site_param": null
+  },
+  "capabilities": {},
+  "discovered": {},
+  "notes": "Written by devops-onboard. Replace nulls before using CDN/OpenSearch/Datadog tools."
+}
