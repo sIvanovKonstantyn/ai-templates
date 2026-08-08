@@ -1,0 +1,27 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.git/
+.cursor/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.eggs/
+dist/
+build/
+.DS_Store
+*.swp
+.coverage
+htmlcov/
+.tox/
+.idea/
+.vscode/
+node_modules/
+# Project-specific: large docs / local-only paths
+# *.pdf
+# agent-transcripts/
+# data/
+# .env

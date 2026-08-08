@@ -1,0 +1,6 @@
+# Copy to defaults.yml via set-defaults.sh (do not put passwords here).
+# host: user@192.168.x.x
+# compose: docker compose
+# remote_path: ~/projects
+# health_url: http://127.0.0.1:8000/health
+# exclude_file: deploy.rsync-exclude
