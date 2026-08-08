@@ -5,6 +5,8 @@ Company-agnostic Cursor **roles**, **skills**, and **prepared tools** for:
 - **Devops** — safe AWS ops via scripts (after onboard), plus LAN/SSH remote
   Linux hosts via `ssh-remote` (rsync, Docker Compose, health/logs)
 - **Analyst** — documentation inventory and analysis notes (after onboard)
+- **Architect** — deterministic codebase architecture analysis (flows, APIs,
+  events, libs, config) via prepared Java AST scripts (after onboard)
 
 No credentials, hostnames, bucket names, or SSM paths are hard-coded in skills.
 AWS/org specifics live in **brain files** from onboard. SSH host defaults live
@@ -18,12 +20,14 @@ From this kit root:
 KIT="$(pwd)"
 WS="/path/to/your/project"   # must contain or create .cursor/
 
-mkdir -p "$WS/.cursor/skills" "$WS/.cursor/rules" "$WS/.cursor/devops" "$WS/.cursor/analyst"
+mkdir -p "$WS/.cursor/skills" "$WS/.cursor/rules" \
+  "$WS/.cursor/devops" "$WS/.cursor/analyst" "$WS/.cursor/architect"
 
 cp "$KIT/rules/"*.mdc "$WS/.cursor/rules/"
 cp -R "$KIT/skills/"* "$WS/.cursor/skills/"
 cp "$KIT/schemas/devops-brain.example.json" "$WS/.cursor/devops/brain.example.json"
 cp "$KIT/schemas/analyst-brain.example.json" "$WS/.cursor/analyst/brain.example.json"
+cp "$KIT/schemas/architect-brain.example.json" "$WS/.cursor/architect/brain.example.json"
 ```
 
 Symlinks work too if you prefer a single source of truth.
@@ -34,10 +38,14 @@ Symlinks work too if you prefer a single source of truth.
 |------|--------|--------|
 | Devops | `devops-onboard` | `.cursor/devops/brain.json`, `ONBOARD_REPORT.md`; may also set `~/.cursor/ssh-remote/defaults.yml` |
 | Analyst | `analyst-onboard` | `.cursor/analyst/brain.json`, `CONTEXT.md` |
+| Architect | `architect-onboard` | `.cursor/architect/brain.json`, `CONTEXT.md` |
 
 1. Enable the role rule in Cursor (or `@`-mention the `.mdc`).
 2. Ask the agent to run the matching onboard skill.
-3. Then use `devops-aws` / `analyst-docs`, and `ssh-remote` for LAN/SSH deploys.
+3. Then use:
+   - `devops-aws` / `ssh-remote` for AWS and LAN deploys
+   - `analyst-docs` for requirements/PDF analysis
+   - `architect-analysis` for architecture reports (Java v1)
 
 ### SSH remote config (precedence)
 
@@ -60,14 +68,16 @@ SSH: prefer keys; optional session-only `SSHPASS` (never commit).
 ## Layout
 
 ```
-rules/           devops-role.mdc, analyst-role.mdc
-schemas/         example brains
+rules/           devops-role.mdc, analyst-role.mdc, architect-role.mdc
+schemas/         example brains (devops, analyst, architect)
 skills/
   devops-onboard/
   devops-aws/
-  ssh-remote/          # LAN/SSH + Docker Compose helpers
+  ssh-remote/             # LAN/SSH + Docker Compose helpers
   analyst-onboard/
   analyst-docs/
+  architect-onboard/
+  architect-analysis/     # Java AST + report orchestration
 ```
 
 ## Optional: Cursor Auto-review
@@ -76,4 +86,4 @@ You can add a workspace `.cursor/permissions.json` that allows non-prod script r
 
 ## Out of scope (v1)
 
-Company deploy CLIs, CRM/email vendors, CI/CD IAM onboarding, and monitor CRUD. Extend with your own skills that read the same brains. Cloud K8s/AWS deploy CLIs are separate from LAN `ssh-remote` Compose workflows.
+Company deploy CLIs, CRM/email vendors, CI/CD IAM onboarding, and monitor CRUD. Extend with your own skills that read the same brains. Cloud K8s/AWS deploy CLIs are separate from LAN `ssh-remote` Compose workflows. Non-Java architect stacks are not shipped yet — extend `architect-analysis` when needed.

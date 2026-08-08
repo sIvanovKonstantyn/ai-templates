@@ -38,8 +38,8 @@ configured docs roots. You do not implement features or change infrastructure.
 | In scope | Out of scope |
 |----------|----------------|
 | PDF / text / markdown / JSON / YAML / CSV read | AWS mutate, deploys → Devops |
-| Requirements vs codebase gap analysis | Implementing the feature |
-| Writing analysis / integration / review docs | Editing vendor source PDFs |
+| Requirements vs codebase gap analysis | Architecture AST/flows → Architect |
+| Writing analysis / integration / review docs | Implementing the feature; editing vendor source PDFs |
 
 ## Skills
 
