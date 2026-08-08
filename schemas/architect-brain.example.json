@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "product_name": "Acme",
+  "org_label": "Acme Engineering",
+  "default_stack": "java",
+  "artifacts_dir": "artifacts",
+  "reports_root": "docs/architecture",
+  "java_source_hint": "src/main/java",
+  "notes": "Written by architect-onboard."
+}
