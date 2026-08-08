@@ -55,7 +55,12 @@ python3 "$SCRIPTS/devops_onboard.py" write \
 ```
 
 5. Show the user `.cursor/devops/ONBOARD_REPORT.md` and which tools are ready.
-6. Hand off to `devops-aws`.
+6. **SSH / LAN default host (personal `ssh-remote` skill)** — if
+   `~/.cursor/skills/ssh-remote/scripts/set-defaults.sh --show` fails, ask the
+   user for a default SSH target (`user@host` or SSH config alias) and optional
+   default compose command. Write with `set-defaults.sh --host ...` (no
+   passwords). Skip only if the user says they will not use LAN/SSH ops.
+7. Hand off to `devops-aws` (and `ssh-remote` when deploying to a Linux host).
 
 ## Subcommands
 
