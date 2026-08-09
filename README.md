@@ -6,7 +6,8 @@ Company-agnostic Cursor **roles**, **skills**, and **prepared tools** for:
   Linux hosts via `ssh-remote` (rsync, Docker Compose, health/logs)
 - **Analyst** — documentation inventory and analysis notes (after onboard)
 - **Architect** — deterministic codebase architecture analysis (flows, APIs,
-  events, libs, config) via prepared Java AST scripts (after onboard)
+  events, libs, config) via prepared Java AST scripts, plus ADS Solution
+  Architecture Documents (after onboard)
 
 No credentials, hostnames, bucket names, or SSM paths are hard-coded in skills.
 AWS/org specifics live in **brain files** from onboard. SSH host defaults live
@@ -46,6 +47,7 @@ Symlinks work too if you prefer a single source of truth.
    - `devops-aws` / `ssh-remote` for AWS and LAN deploys
    - `analyst-docs` for requirements/PDF analysis
    - `architect-analysis` for architecture reports (Java v1)
+   - `architect-sad` for ADS Solution Architecture Documents (Medwick/ADS outline)
 
 ### SSH remote config (precedence)
 
@@ -77,9 +79,9 @@ skills/
   analyst-onboard/
   analyst-docs/
   architect-onboard/
-  architect-analysis/     # Java AST + report orchestration
+  architect-analysis/     # Java AST + code-derived report orchestration
+  architect-sad/          # ADS Solution Architecture Document template + authoring
 ```
-
 ## Optional: Cursor Auto-review
 
 You can add a workspace `.cursor/permissions.json` that allows non-prod script runs and blocks prod-class profiles. This kit does not ship one — keep that policy in your company workspace.

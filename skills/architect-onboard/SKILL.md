@@ -39,7 +39,8 @@ python3 "$SCRIPTS/architect_onboard.py" write \
   --ensure-dirs
 ```
 
-3. Show `.cursor/architect/CONTEXT.md` and hand off to `architect-analysis`.
+3. Show `.cursor/architect/CONTEXT.md` and hand off to `architect-analysis`
+   (code evidence) and/or `architect-sad` (ADS Solution Architecture Documents).
 
 ## Subcommands
 
