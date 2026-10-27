@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": ".cursor/hooks/guard-product-writes.py",
+        "matcher": "Write|StrReplace|Delete|EditNotebook|ApplyPatch"
+      }
+    ],
+    "stop": [
+      {
+        "type": "prompt",
+        "prompt": "If this session changed files outside .spec and .cursor, run .cursor/hooks/verify-stamp.sh. When it exits non-zero, finish the current .spec task: spec.md before product code, then .cursor/tools/verify-report.py --id <id> --strict. Read only .spec/tasks/<id>/verify-report.md. Do not paste test, style, smoke, or e2e output into the chat, the spec, or verify.json. When the report has no issues, write .spec/tasks/<id>/verify.json with exit 0. Do not edit reviewer rules, the PMD ruleset, ArchUnit tests, or baseline.md to get a green run. Hook input: $ARGUMENTS",
+        "timeout": 30,
+        "loop_limit": 3
+      }
+    ]
+  }
+}

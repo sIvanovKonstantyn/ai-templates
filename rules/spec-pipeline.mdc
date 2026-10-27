@@ -1,0 +1,39 @@
+---
+description: Spec pipeline for implementation tasks. Apply before any product change that fulfills a .spec task.
+alwaysApply: true
+---
+
+# Spec pipeline
+
+Commands:
+
+- `/onboard` and `/refresh` follow `.cursor/skills/spec-onboard/SKILL.md`. `/refresh` keeps an existing constitution in place and appends the smoke rule when that file does not already contain it. It keeps reviewer rules.
+- `/implement <id>` follows `.cursor/skills/spec-implement/implement.md`.
+- `/batch` follows `.cursor/skills/spec-implement/batch.md`. A list of briefs still writes a spec before code for each id.
+- `/investigate <id>` writes the finding and does not change product code.
+
+A task starts as `.spec/tasks/<id>/brief.md`.
+
+Before the first product edit for that id:
+
+1. Read `.spec/constitution.md`, `.spec/docs/reviewer-rules.md`, `.spec/docs/critical.md`, and the Verify section of `.spec/docs/runbook.md`.
+2. Write `.spec/tasks/<id>/spec.md`, including the brief's Breaks section, and `subtask-N.md`.
+3. Set one subtask to `in-progress` and write the id in `.spec/tasks/active`.
+
+While implementing:
+
+- Satisfy that subtask. Run `.cursor/tools/verify-report.py --id <id>`. Read `.spec/tasks/<id>/verify-report.md` only. Set the subtask to `done` when that report has no issues.
+- Fix product code when the report lists an issue. Do not run the test, style, smoke, or e2e commands yourself.
+- Update the doc files the spec names.
+- When the task changes an HTTP route, method, request field, response body, or status, call those routes on the started application and write `.spec/tasks/<id>/smoke.md` before `verify.json`. Each check records the request (method, path, headers, body), the response (status, headers, and the body or the excerpt that was checked), and the verification (what was checked, pass or fail). A failed check is fixed in product code and run again. Skip `smoke.md` only when the task does not change HTTP.
+- Run `.cursor/tools/verify-report.py --id <id> --strict` again. Write `.spec/tasks/<id>/verify.json` with `"exit": 0`, `at`, `commit`, `packages`, and `commands` only after the report has no issues. `commands` lists the commands named in the report, not their output. Then set the brief, the spec, and the subtasks to `done` and delete `.spec/tasks/active`.
+
+Refuse to:
+
+- Invent behavior the brief, the spec, and the code do not support.
+- Edit reviewer rules, the PMD ruleset, ArchUnit tests, or `.spec/docs/baseline.md` to turn a command green.
+- Start another task folder in the same request.
+- Change product code for a brief whose kind is `investigation`.
+- Rewrite a task spec that already has `verify.json` with `"exit": 0`. Update `.spec/docs/critical.md` and the new spec instead.
+- Mark a task done when `smoke.md` has a failed check, or when an HTTP change has no `smoke.md`.
+- Put test, style, smoke, or e2e output into the chat, the spec, `verify.json`, or any file other than `.spec/tasks/<id>/verify-report.md`. Do not read surefire reports, raw command logs, or `.spec/tasks/<id>/.smoke-raw.md`.
