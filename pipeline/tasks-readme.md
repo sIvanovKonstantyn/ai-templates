@@ -1,11 +1,6 @@
 # Tasks
-
-Add one folder per task: `.spec/tasks/<id>/brief.md`.
-
-Use the brief shape from the spec kit (`pipeline/brief.md`): goal, constraints, out of scope, and done when. Set **Kind** to `feature`, `bugfix`, or `investigation`.
-
-`/implement <id>` implements one brief. `/batch` implements several, in order. Both write `spec.md` before code.
-
-When `verify.json` has `"exit": 0`, the brief, the spec, and the subtasks are `done`. Spec IDE lists a brief under Open only while it has no such receipt. A finished brief left at `open` is still hidden once the receipt exists.
-
-An investigation writes the finding in `spec.md` and does not change product code.
+One folder per task: `.spec/tasks/<id>/`.
+A person writes `.spec/tasks/<id>/spec.md`. Use `.cursor/skills/spec-implement/spec-template.md`. Each subtask has a Definition, Recommendations, and a Verification approach. A `brief.md` may sit next to it as the short request.
+`/implement <id>` implements all subtasks. `/implement <id> N` implements subtask N. The agent writes `subtask-N.md` with the status and progress log for each subtask.
+The agent sets a finished subtask to `ready-for-review`. Only the user sets `approved`. A task is done when all its subtasks are `approved`.
+Tasks sent in chat (review feedback, fixes, questions) do not need a folder here.

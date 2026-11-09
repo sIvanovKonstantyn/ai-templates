@@ -2,7 +2,7 @@
 
 Two kinds of files live here.
 
-The service pipeline is what `/onboard` and `/refresh` copy into a backend. Spec IDE does not send these files. It reads the copies in the target repo. A person adds `.spec/tasks/<id>/brief.md`. Asking the agent to implement that id runs the rest.
+The service pipeline is what `/onboard` and `/refresh` copy into a backend. Spec IDE does not send these files. It reads the copies in the target repo. A person writes `.spec/tasks/<id>/spec.md` with subtasks. Asking the agent to implement that id (or one subtask) runs the rest, and the person approves each subtask.
 
 Role skills, the scripts those skills run, and the role rules are not part of service onboarding. Other pipelines install them on their own. Service onboard must not copy them.
 
@@ -10,25 +10,28 @@ Role skills, the scripts those skills run, and the role rules are not part of se
 
 | Path | Role |
 | --- | --- |
-| `pipeline/commands.md` | `/onboard`, `/refresh`, `/implement`, `/batch`, `/investigate` |
-| `pipeline/brief.md` | Shape of the brief a person writes |
+| `pipeline/commands.md` | `/onboard`, `/refresh`, `/implement <id> [N]`, `/prepare-mr` |
+| `pipeline/spec-template.md` | Shape of the spec a person writes: goal and subtasks, each with Definition, Recommendations, and Verification |
+| `pipeline/brief.md` | Optional short request that may sit next to the spec (no Breaks section) |
 | `pipeline/constitution.md` | Pipeline law, copied to `.spec/constitution.md` |
 | `pipeline/onboard.md` | Onboard procedure |
-| `pipeline/implement.md` | Implement one task |
-| `pipeline/batch.md` | Implement several tasks in order |
-| `pipeline/investigate.md` | Investigation procedure |
+| `pipeline/implement.md` | Implement all subtasks or one; per-subtask file and review states |
 | `pipeline/tasks-readme.md` | Copied to `.spec/tasks/README.md` |
 | `rules/spec-pipeline.mdc` | Always-on Cursor rule |
 | `rules/go-standards.mdc` | Go file rule |
 | `rules/java-standards.mdc` | Java file rule |
 | `skills/spec-onboard/SKILL.md` | Onboard when asked |
-| `skills/spec-implement/SKILL.md` | Implement one task when asked |
-| `hooks/hooks.json` | Product-write guard and verify follow-up |
-| `hooks/guard-product-writes.py` | Denies a product edit until a subtask is `in-progress` |
-| `hooks/verify-stamp.sh` | Fails when product files are newer than `verify.json` |
+| `skills/spec-implement/SKILL.md` | Implement a spec; HTTP and Event smoke checks |
+| `skills/prepare-mr/SKILL.md` | Bump the version, add the changelog entry, commit, and print the MR link |
+| `tools/verify-report.py` | Runs the runbook Verify layers and writes the short report. A spec's Verification section can name it; Smoke is deferred until `--strict` |
+| `tools/smoke-http.py` | One HTTP smoke check; appends it to `smoke.md` with the token redacted |
+| `tools/smoke-events.py` | Event smoke checks on a Redis stream (`ping`, `mark`, `expect`) |
+| `tools/smoke/` | Redis env template, local Redis compose file, event tool self-test, token script |
+| `tools/prepare-mr.py` | Version bump (`pom.xml` or `package.json`), changelog entry, and GitLab MR link |
 | `profiles/go/` | Go docs, standards, and verify commands |
-| `profiles/java/` | Java docs, standards, PMD ruleset, and verify commands |
+| `profiles/java/` | Java docs, standards, PMD ruleset, verify commands, and the style tool (`style-check.py`, `style/`) |
 
+| `model-learning/` | Reference material for teaching agents: spec writing rules and worked brief-to-spec examples per language (`java/` now). Not copied by `/onboard` |
 Profiles are `go` (a `go.mod`) and `java` (a `pom.xml` or `build.gradle`). Commit `.spec`. A gitignored spec folder has no spec commit, so Spec IDE cannot call the spec actual.
 
 ## Roles

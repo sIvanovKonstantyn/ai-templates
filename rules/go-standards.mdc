@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Go standards
 
-- Format with gofmt. `test -z "$(gofmt -l .)"` must exit 0, except for files already named in `.spec/docs/baseline.md`. Run `.cursor/tools/verify-report.py`. Do not paste command output into the chat, the spec, or `verify.json`.
+- Format with gofmt. `test -z "$(gofmt -l .)"` must exit 0, except for files already named in `.spec/docs/baseline.md`. Run `.cursor/tools/verify-report.py`. Do not paste command output into the chat or the spec.
 - `go vet ./...` and `go test ./...` must exit 0, with the same baseline exception.
 - Return errors with enough context to tell which operation failed. Do not discard an error with `_` unless the spec says that call is best-effort.
 - Keep a feature's behavior in the package the spec names.

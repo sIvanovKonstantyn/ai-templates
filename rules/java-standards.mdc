@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Java standards
 
-- The required Verify commands in `.spec/docs/runbook.md` must exit 0, except for findings already named in `.spec/docs/baseline.md`. Run `.cursor/tools/verify-report.py`. Do not paste command output into the chat, the spec, or `verify.json`.
+- The required Verify commands in `.spec/docs/runbook.md` must exit 0, except for findings already named in `.spec/docs/baseline.md`. Run `.cursor/tools/verify-report.py`. Do not paste command output into the chat or the spec.
 - Do not add an empty catch, an unused local, an unused private field, or an unnecessary import.
 - A package named `domain` does not depend on a package named `web`.
 - Do not swallow an exception. Add context and rethrow, or handle the case the spec names.

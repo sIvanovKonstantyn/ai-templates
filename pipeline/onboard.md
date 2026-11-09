@@ -2,9 +2,9 @@ You are onboarding a repository for agent implementation. The workspace root is 
 Write files with your file tools. Printing a file is not a substitute for writing it.
 Do not implement a product feature. Do not add `.spec/` to `.gitignore`. The spec folder must be committed so Spec IDE can compare it with later commits.
 
-The kit root is the directory that contains this file's sibling folders `rules/`, `skills/`, `hooks/`, and `profiles/`. From a checkout of this workspace that is `spec-ide/templates`.
+The kit root is the directory that contains this file's sibling folders `rules/`, `skills/`, `tools/`, and `profiles/`. From a checkout of this workspace that is `spec-ide/templates`.
 
-This procedure is service onboarding only. Do not copy role rules (`devops-role.mdc`, `analyst-role.mdc`, `architect-role.mdc`), `schemas/`, or any skill other than `spec-onboard` and `spec-implement`. Those skills, their scripts, and those roles belong to other pipelines.
+This procedure is service onboarding only. Do not copy role rules (`devops-role.mdc`, `analyst-role.mdc`, `architect-role.mdc`), `schemas/`, or any skill other than `spec-onboard`, `spec-implement`, and `prepare-mr`. Those skills, their scripts, and those roles belong to other pipelines.
 
 ## Detect the profile
 
@@ -18,48 +18,45 @@ Read `profiles/<profile>/docs.md`, `profiles/<profile>/verify.md`, and `profiles
 
 Create `.spec/` if it is missing.
 
-- Copy `pipeline/constitution.md` to `.spec/constitution.md` when that file is missing. When `.spec/constitution.md` already exists, leave it in place. If it does not already contain the live HTTP smoke rule, append that rule from `pipeline/constitution.md` as the next numbered rule. Do not rewrite the rest of that file.
+- Copy `pipeline/constitution.md` to `.spec/constitution.md` when that file is missing. When it exists and still names `.spec/tasks/active` or `.spec/reviews/active` (the old pipeline), replace it with the kit version and say so in the summary. Otherwise leave it in place.
 - Write the docs `profiles/<profile>/docs.md` describes. Map the code that is there. Do not invent services, endpoints, packages, or versions.
 - Write `.spec/docs/reviewer-rules.md` from `profiles/<profile>/standards.md` when the file is missing, empty, or only the comment `Populate on demand with rules for AI reviewers`. Leave real rules in place.
-- Write `.spec/docs/runbook.md`, including a `## Verify` section, from `profiles/<profile>/verify.md`. Use commands the repository can run. Add a `## Smoke` section. It says to start the app the way that runbook's local-run section already says, call the changed routes, and write `.spec/tasks/<id>/smoke.md`. Each check has three parts: the request (method, path, headers, body), the response (status, headers, and the body or the excerpt that was checked), and the verification (what was checked, pass or fail). Do not invent a server command the repository does not already use. When the runbook already exists, add `## Smoke` if that section is missing, and do not rewrite the rest of the file.
+- Write `.spec/docs/runbook.md`, including a `## Verify` section, from `profiles/<profile>/verify.md`. Use commands the repository can run. Add a `## Smoke` section. It says to start the app the way that runbook's local-run section already says, call the changed routes, and write `.spec/tasks/<id>/smoke.md`. It says smoke runs only when a subtask's Verification section names it. When the service publishes events to a Redis stream, it names the stream, the stream field that holds the event JSON, and the configuration property the service reads the event Redis from, for the Event checks. It names throwaway test data for writes to shared resources and how to get a token when routes need one (`SMOKE_TOKEN` or `SMOKE_TOKEN_COMMAND`). Keep manual smoke steps out of code fences, because Verify runs every fenced command. Each check has three parts: the request (method, path, headers, body), the response (status, headers, and the body or the excerpt that was checked), and the verification (what was checked, pass or fail). Do not invent a server command the repository does not already use. When the runbook already exists, add `## Smoke` if that section is missing, and do not rewrite the rest of the file.
 - Copy `pipeline/tasks-readme.md` to `.spec/tasks/README.md` when that file is missing. Do not put a task brief there.
 
 ## Install the agent files
-
 On `/onboard` and `/refresh`, replace these kit procedure files from the kit even when they already exist:
-
 - `rules/spec-pipeline.mdc` to `.cursor/rules/spec-pipeline.mdc`
 - `pipeline/implement.md` to `.cursor/skills/spec-implement/implement.md`
-- `pipeline/batch.md` to `.cursor/skills/spec-implement/batch.md`
+- `pipeline/spec-template.md` to `.cursor/skills/spec-implement/spec-template.md`
+- `tools/verify-report.py` to `.cursor/tools/verify-report.py`
 - `pipeline/commands.md` to `.spec/docs/commands.md`
-
 Copy the remaining files, and do not overwrite a file that already has local edits you did not just write:
-
 - `rules/<profile>-standards.mdc` to `.cursor/rules/<profile>-standards.mdc`
 - `skills/spec-onboard/` to `.cursor/skills/spec-onboard/`
 - `pipeline/onboard.md` to `.cursor/skills/spec-onboard/PROCEDURE.md`
 - `skills/spec-implement/` to `.cursor/skills/spec-implement/`
-- `pipeline/investigate.md` to `.cursor/skills/spec-implement/investigate.md`
-- `hooks/hooks.json` to `.cursor/hooks.json`
-- `hooks/guard-product-writes.py` and `hooks/verify-stamp.sh` to `.cursor/hooks/`
-- `tools/verify-report.py` to `.cursor/tools/verify-report.py`
-- For Java, `profiles/java/pmd-ruleset.xml` to `.cursor/tools/pmd/ruleset.xml`
-
+- `skills/prepare-mr/` to `.cursor/skills/prepare-mr/`, and `tools/prepare-mr.py` to `.cursor/tools/prepare-mr.py`, when the repository has a `review/<TICKET>` branch workflow and a changelog
+- `tools/smoke-http.py`, `tools/smoke-events.py`, and `tools/smoke/` to `.cursor/tools/`, when Smoke is not `required: no`
+- For Java, `profiles/java/pmd-ruleset.xml` to `.cursor/tools/pmd/ruleset.xml`, and the style tool: `profiles/java/style-check.py` to `.cursor/tools/style-check.py` and `profiles/java/style/` to `.cursor/tools/style/`. Write the Style layer as `profiles/java/verify.md` says. Do not add PMD, Checkstyle, or other plugins to the project build file.
+Do not install hooks.
+On `/refresh` of a repository that ran the old pipeline, remove these files when they exist, because the kit no longer ships them:
+- `.cursor/hooks/guard-product-writes.py` and `.cursor/hooks/verify-stamp.sh`. Remove the product-write guard and the verify stop entry from `.cursor/hooks.json`, and delete that file when nothing else is left in it.
+- `.cursor/skills/spec-implement/batch.md`, `investigate.md`, and `review-fix.md`.
+- `.spec/tasks/active` and `.spec/reviews/active`.
+Leave existing `brief.md`, `spec.md`, `subtask-N.md`, `verify.json`, and `.spec/reviews/` files in place. They are history.
 Write `AGENTS.md` at the repository root when it is missing:
-
 ```markdown
 # Agent work
-
-Send `/onboard`, `/refresh`, `/implement <id>`, `/batch`, or `/investigate <id>`.
-
-Implement one task only by following `.cursor/skills/spec-implement/implement.md`.
-A list of briefs follows `.cursor/skills/spec-implement/batch.md`.
+Send `/onboard`, `/refresh`, `/implement <id> [N]`, or `/prepare-mr`.
+Prepare the merge request for a `review/<ticket>` branch by following `.cursor/skills/prepare-mr/SKILL.md`.
+The user writes `.spec/tasks/<id>/spec.md`. Implement all its subtasks, or subtask N only, by following `.cursor/skills/spec-implement/implement.md`.
+Do not write a spec unless the user asks. Only the user approves a subtask.
 The task id is the folder name under `.spec/tasks/`.
+Tasks sent in chat, such as review feedback, do not use the spec workflow.
 Onboard or refresh this repository by following `.cursor/skills/spec-onboard/SKILL.md`.
 ```
-
-Make the hook scripts and `.cursor/tools/verify-report.py` executable.
-
+Make every script under `.cursor/tools/` executable. When `AGENTS.md` exists with the old command list (`/batch`, `/investigate`, or `/review-fix`), replace it with the text above. Leave the `/prepare-mr` line out when the prepare-mr skill was not installed.
 ## Verify and record
 
 Run `.cursor/tools/verify-report.py`. Read `.spec/verify-report.md` when `--id` was omitted, or the task report when it was passed. Do not paste command output into the chat or the spec.

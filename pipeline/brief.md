@@ -1,30 +1,12 @@
 # <title>
-
 - **Kind:** `feature`
 - **Status:** `open`
-
-Kind is `feature`, `bugfix`, or `investigation`.
-
+Kind is `feature` or `bugfix`. The brief is an optional short request. The spec (`spec-template.md`) is what the agent implements.
 ## Goal
-
 What the change must make true.
-
 ## Constraints
-
 Limits the implementation has to respect. Omit this section when there are none.
-
 ## Out of scope
-
 What this task does not change.
-
-## Breaks
-
-Fill these three lines before any code. `none` is an answer. The implement procedure copies this section into `spec.md`.
-
-- Status text and tests:
-- Keys:
-- Filesystem:
-
 ## Done when
-
-Observable outcomes. The agent turns these into acceptance criteria in `spec.md`.
+Observable outcomes the person turns into the Verification of the spec's subtasks.

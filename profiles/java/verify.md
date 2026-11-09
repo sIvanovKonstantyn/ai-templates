@@ -6,9 +6,9 @@ Detect the build and put that command under Tests:
 - `./mvnw` means `./mvnw -q test`
 - otherwise `mvn -q test` when `pom.xml` exists
 
-Copy `profiles/java/pmd-ruleset.xml` to `.cursor/tools/pmd/ruleset.xml`.
-
-When the root build file is one you can extend without removing existing plugins, bind that ruleset so PMD fails the build. Put `./gradlew pmdMain` or `mvn -q pmd:check` under Style with `required: yes`. When binding it would mean rewriting the build, leave the ruleset on disk, set Style to `required: no`, and say in the runbook that PMD is not bound yet.
+Copy `profiles/java/pmd-ruleset.xml` to `.cursor/tools/pmd/ruleset.xml`, `profiles/java/style-check.py` to `.cursor/tools/style-check.py`, and `profiles/java/style/` to `.cursor/tools/style/`.
+For a Maven project, put `python3 .cursor/tools/style-check.py` under Style with `required: yes`, after the Tests command (prefix `JAVA_HOME=...` when the project needs a specific JDK). The tool does not change the build file. It runs PMD with the kit ruleset, with the PMD jars resolved from `style/pmd-pom.xml`, a standalone descriptor that is never built, and `RedundantAnnotationDefaults`, which flags an annotation attribute set to its declared default value. It needs the compiled classes from the Tests command. It reports only findings on lines changed against the upstream merge-base, plus untracked files, one line each as `path:line Rule message`, so legacy findings do not fail a task. `--all` reports every finding; record that count in the baseline. Set `SPEC_MAVEN_SETTINGS` when Maven needs a settings file other than `~/.m2/settings.xml`.
+For a Gradle project the style tool does not apply. When the build can be extended without removing existing plugins, bind the ruleset with `./gradlew pmdMain` under Style. Otherwise leave the ruleset on disk, set Style to `required: no`, and say in the runbook that PMD is not bound yet. Do not add PMD, Checkstyle, or other plugins to a Maven build file.
 
 Add an ArchUnit test that domain does not depend on web only when both packages exist. Do not add a test that does not compile. The test command then runs it.
 
@@ -16,7 +16,7 @@ Add an ArchUnit test that domain does not depend on web only when both packages 
 
 ## Verify
 
-Run `.cursor/tools/verify-report.py --id <id>`. Read `.spec/tasks/<id>/verify-report.md` and nothing else from that run. Do not paste command output into the chat, the spec, or `verify.json`.
+Run `.cursor/tools/verify-report.py --id <id>`. Read `.spec/tasks/<id>/verify-report.md` and nothing else from that run. Do not paste command output into the chat or the spec.
 
 ### Tests
 
@@ -27,11 +27,9 @@ mvn -q test
 ```
 
 ### Style
-
 required: yes
-
 ```
-mvn -q pmd:check
+python3 .cursor/tools/style-check.py
 ```
 
 ### Smoke
@@ -48,6 +46,7 @@ required: no
 ```
 ```
 
-`required` is `yes`, `no`, or `when-http`. `when-http` runs the Smoke commands only when `.spec/tasks/<id>/smoke.md` records checks. A single line `HTTP: unchanged` skips Smoke. `yes` always runs the commands. `no` skips the layer.
+`required` is `yes`, `no`, or `when-http`. `when-http` runs the Smoke commands only when `.spec/tasks/<id>/smoke.md` records checks. A single line `HTTP: unchanged` skips Smoke. `yes` always runs the commands. `no` skips the layer. A library with no runnable application uses Smoke `required: no`.
+Smoke runs only when a subtask's Verification section names it. Without `--strict` the report shows a `when-http` Smoke layer as `deferred to task finish`. `--strict` evaluates `smoke.md`: HTTP checks with `Result: pass`, and at least one Event check when `smoke.md` says `Events: changed`. Manual smoke steps (start, `smoke-http.py`, `smoke-events.py`) are written outside code fences, because Verify runs every fenced command.
 
 The report lists only the failing lines. Keep a command in Verify only when it exits 0 on the current tree, or name it in `.spec/docs/baseline.md`. Copy the issue lines from the report into the baseline. Do not copy the command log.

@@ -2,6 +2,14 @@
 """Run the runbook layers and write a short report.
 
 A command may contain `<id>`. It is replaced with `--id` before the command runs.
+`--id` names a task under `.spec/tasks/` or a review fix under `.spec/reviews/`.
+
+Smoke runs once per task, after every subtask is done. Without `--strict`, a `when-http` Smoke layer is
+reported as `deferred to task finish` and `smoke.md` is not read. `--strict` evaluates it: HTTP checks
+(`Result: pass|fail`) and, when `smoke.md` says `Events: changed`, at least one `### Event check` block.
+
+When a command prints compact `path:line Rule message` lines (the Java style tool does), only those lines
+are kept, at most 40.
 
 Stdout and the report file contain the layer results and the failing lines only.
 Command logs are not printed.
@@ -25,7 +33,18 @@ ISSUE = re.compile(
 HTTP_UNCHANGED = re.compile(r"^HTTP:\s*unchanged\s*$", re.I | re.M)
 RESULT_FAIL = re.compile(r"Result:\s*fail\b", re.I)
 RESULT_PASS = re.compile(r"Result:\s*pass\b", re.I)
+EVENTS_CHANGED = re.compile(r"^Events:\s*changed\s*$", re.I | re.M)
+EVENT_CHECK = "### Event check"
+LOCATION = re.compile(r"^(\S+:\d+ \S+.*|style-check: .*)$")
+MAX_FINDINGS = 40
 DEFAULTS = {"tests": "yes", "style": "yes", "smoke": "when-http", "e2e": "no"}
+TOOLS = Path(__file__).resolve().parent
+
+
+def record_dir(root: Path, item_id: str) -> Path:
+    """A review fix id lives under .spec/reviews; any other id is a task under .spec/tasks."""
+    review = root / ".spec" / "reviews" / item_id
+    return review if review.is_dir() else root / ".spec" / "tasks" / item_id
 
 
 def verify_body(text: str) -> str:
@@ -65,8 +84,12 @@ def parse_layers(text: str) -> list[dict]:
     return layers
 
 
-def highlight(text: str, limit: int = 40) -> list[str]:
+def highlight(text: str, limit: int = MAX_FINDINGS) -> list[str]:
     lines = text.splitlines()
+    compact = [line.strip()[:220] for line in lines if LOCATION.match(line.strip())]
+    if compact:
+        extra = len(compact) - limit
+        return compact[:limit] + ([f"... {extra} more, run the command locally"] if extra > 0 else [])
     chosen: list[str] = []
     for index, line in enumerate(lines):
         if not ISSUE.search(line):
@@ -108,10 +131,17 @@ def run_command(root: Path, command: str) -> tuple[int, str]:
 
 
 def smoke_note(root: Path, task_id: str) -> str | None:
-    path = root / ".spec" / "tasks" / task_id / "smoke.md"
+    path = record_dir(root, task_id) / "smoke.md"
     if not path.is_file():
         return "smoke.md is missing. Write the checks, or a single line `HTTP: unchanged`."
     text = path.read_text(encoding="utf-8", errors="replace")
+    if EVENTS_CHANGED.search(text):
+        tool = (TOOLS / "smoke-events.py").relative_to(root) if TOOLS.is_relative_to(root) else "smoke-events.py"
+        if EVENT_CHECK not in text:
+            return f"smoke.md declares `Events: changed` but has no Event check. Run {tool}."
+        if RESULT_FAIL.search(text):
+            return "smoke.md has a check with Result: fail."
+        return ""
     if HTTP_UNCHANGED.search(text):
         if RESULT_FAIL.search(text):
             return "smoke.md says HTTP unchanged and also has a failed check."
@@ -141,18 +171,16 @@ def evaluate(root: Path, task_id: str, strict: bool) -> tuple[list[dict], list[s
                 issues.append("Smoke is when-http. Pass --id.")
                 rows.append({"name": name, "result": "fail", "commands": []})
                 continue
-            note = smoke_note(root, task_id)
-            if note and note.startswith("smoke.md is missing") and not strict:
-                rows.append({"name": name, "result": "not run", "commands": []})
+            if not strict:
+                rows.append({"name": name, "result": "deferred to task finish", "commands": []})
                 continue
+            note = smoke_note(root, task_id)
             if note is None:
                 rows.append({"name": name, "result": "fail", "commands": []})
                 continue
             if note == "":
-                unchanged = HTTP_UNCHANGED.search(
-                    (root / ".spec" / "tasks" / task_id / "smoke.md").read_text(encoding="utf-8", errors="replace")
-                )
-                if unchanged:
+                smoke_text = (record_dir(root, task_id) / "smoke.md").read_text(encoding="utf-8", errors="replace")
+                if HTTP_UNCHANGED.search(smoke_text) and not EVENTS_CHANGED.search(smoke_text):
                     rows.append({"name": name, "result": "not required", "commands": []})
                     continue
             elif note:
@@ -208,9 +236,9 @@ def render(rows: list[dict], issues: list[str]) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the Verify layers and write a short report.")
-    parser.add_argument("--id", default="", help="Task id, the folder under .spec/tasks/")
+    parser.add_argument("--id", default="", help="Task id under .spec/tasks/, or review fix id under .spec/reviews/")
     parser.add_argument("--root", default=".", help="Repository root")
-    parser.add_argument("--strict", action="store_true", help="Fail when a when-http smoke file is missing")
+    parser.add_argument("--strict", action="store_true", help="Evaluate smoke.md (task finish). Without it Smoke is deferred")
     args = parser.parse_args()
     root = Path(args.root).resolve()
     task_id = args.id.strip()
@@ -223,7 +251,7 @@ def main() -> None:
     spec.mkdir(parents=True, exist_ok=True)
     (spec / "verify-report.md").write_text(report, encoding="utf-8")
     if task_id:
-        destination = spec / "tasks" / task_id / "verify-report.md"
+        destination = record_dir(root, task_id) / "verify-report.md"
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(report, encoding="utf-8")
     sys.stdout.write(report)

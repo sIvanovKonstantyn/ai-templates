@@ -1,11 +1,11 @@
 # Commands
-
 Send one of these to the agent. The id is the folder name under `.spec/tasks/`.
-
 | Command | When |
 | --- | --- |
-| `/onboard` | Install the kit on a new or existing Go or Java repo. Writes docs, rules, skills, hooks, and `.spec/onboard.json`. |
-| `/refresh` | Run onboard again. Keeps an existing constitution in place and appends the smoke rule when it is missing. Keeps reviewer rules that already have a body. Replaces `implement.md`, `batch.md`, `spec-pipeline.mdc`, and `commands.md` even when those files already exist. |
-| `/implement <id>` | One brief. Spec, then code, then `.cursor/tools/verify-report.py`, then docs. The agent reads the short report and does not paste command output. Writes `smoke.md` when the task changes HTTP, then one `verify.json`. |
-| `/batch` | Several briefs, in order. Spec, then code, then that id's tests, then docs, for each id. After the last id, writes `smoke.md` for each id that changed HTTP, then one full Verify run and a `verify.json` receipt per id. |
-| `/investigate <id>` | The brief exists. The agent writes the finding and does not change product code. |
+| `/onboard` | Install the kit on a new or existing Go or Java repo. Writes docs, rules, skills, tools, and `.spec/onboard.json`. Installs no hooks. |
+| `/refresh` | Run onboard again. Keeps reviewer rules that already have a body. Replaces `implement.md`, `spec-template.md`, `spec-pipeline.mdc`, `commands.md`, and the constitution when it still holds the old pipeline rules. Removes the files of the old hook pipeline. |
+| `/implement <id>` | Implement all subtasks of the user-written `.spec/tasks/<id>/spec.md`, in order. Each subtask gets `subtask-N.md`, runs the Verification from the spec, and stops at `ready-for-review`. |
+| `/implement <id> N` | Implement subtask N only. |
+| `/prepare-mr` | On a `review/<TICKET>` branch: bump the version, add the changelog entry, commit, push, and print the merge request link. Never stages `.spec/`, `.cursor/`, or `AGENTS.md`. |
+The user writes the spec (shape: `pipeline/spec-template.md`). The agent writes it only when asked. Only the user sets a subtask to `approved`.
+Messages in chat, such as review feedback, fixes, and questions, are not commands and do not use the spec workflow.

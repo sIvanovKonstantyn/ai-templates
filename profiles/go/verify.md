@@ -4,7 +4,7 @@ From the module root, `.spec/docs/runbook.md` has a `## Verify` section with fou
 
 ## Verify
 
-Run `.cursor/tools/verify-report.py --id <id>`. Read `.spec/tasks/<id>/verify-report.md` and nothing else from that run. Do not paste command output into the chat, the spec, or `verify.json`.
+Run `.cursor/tools/verify-report.py --id <id>`. Read `.spec/tasks/<id>/verify-report.md` and nothing else from that run. Do not paste command output into the chat or the spec.
 
 ### Tests
 
@@ -37,7 +37,7 @@ required: no
 ```
 ```
 
-`required` is `yes`, `no`, or `when-http`. `when-http` runs the Smoke commands only when `.spec/tasks/<id>/smoke.md` records checks. A single line `HTTP: unchanged` skips Smoke. `yes` always runs the commands. `no` skips the layer. An end-to-end suite this module already has goes under E2E with `required: yes`. Leave E2E at `required: no` when the module has none.
+`required` is `yes`, `no`, or `when-http`. `when-http` runs the Smoke commands only when `.spec/tasks/<id>/smoke.md` records checks. A single line `HTTP: unchanged` skips Smoke. `yes` always runs the commands. `no` skips the layer. Smoke runs only when a subtask's Verification section names it. Without `--strict` the report shows a `when-http` Smoke layer as `deferred to task finish`. `--strict` also requires an Event check when `smoke.md` says `Events: changed`. An end-to-end suite this module already has goes under E2E with `required: yes`. Leave E2E at `required: no` when the module has none.
 
 `gofmt -l` prints paths and still exits 0. The `test -z` form exits 1 when any file needs formatting.
 
